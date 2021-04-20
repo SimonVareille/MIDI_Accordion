@@ -41,7 +41,7 @@ struct MySettings : public midi::DefaultSettings
 //#define DEBUG//uncomment this line to print serial messages, comment to send MIDI data
 //#define BLUETOOTH//uncomment this line to send MIDI data via bluetooth instead of USB
 //#define BMP//uncomment this line to use the BMP180 to add dynamics via bellows
-#define JOYSTICK//uncomment this line to use a joystick as a pitch-bend controller
+//#define JOYSTICK//uncomment this line to use a joystick as a pitch-bend controller
 
 #ifdef BLUETOOTH
   MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial1, MIDI, MySettings);
@@ -179,11 +179,16 @@ void loop()
   #ifdef JOYSTICK
     int pitch_bend_val = scan_joystick();
     if(pitch_bend_val != joystick_prev_val) {
-      //Comment and uncomment to select which channels you want pitch bend to affect.
-      MIDI.sendPitchBend(pitch_bend_val, 1);
-      //MIDI.sendPitchBend(pitch_bend_val, 2);
-      //MIDI.sendPitchBend(pitch_bend_val, 3);
-      joystick_prev_val = pitch_bend_val;
+      #ifdef DEBUG
+        Serial.print("Pitch Bend Change: ");
+        Serial.println(pitch_bend_val);
+      #else
+        //Comment and uncomment to select which channels you want pitch bend to affect.
+        MIDI.sendPitchBend(pitch_bend_val, 1);
+        //MIDI.sendPitchBend(pitch_bend_val, 2);
+        //MIDI.sendPitchBend(pitch_bend_val, 3);
+        joystick_prev_val = pitch_bend_val;
+      #endif
     }
   #endif
 
